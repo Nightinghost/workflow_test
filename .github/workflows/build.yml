@@ -55,9 +55,9 @@ jobs:
         with:
           submodules: recursive
           
-      - name: Install LLVM/Clang
-        run: |
-          choco install llvm --version=16.0.6 -y
+      # - name: Install LLVM/Clang
+      #   run: |
+      #     choco install llvm --version=16.0.6 -y
           
       - name: Configure CMake
         run: |
