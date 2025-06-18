@@ -182,7 +182,7 @@ jobs:
           echo "| g++13 (Linux)  | ![GCC Build]($GCC_URL) |" >> README.md
           echo "" >> README.md
           echo "## Project Description" >> README.md
-          echo "Your project description here..." >> README.md
+          echo "Your project description here... " >> README.md
           
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
