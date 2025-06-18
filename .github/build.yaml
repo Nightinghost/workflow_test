@@ -1,0 +1,196 @@
+name: Cross-Platform Build and Test
+
+on: [push, pull_request]
+
+jobs:
+  windows_msvc:
+    runs-on: windows-latest
+    name: VS2022 (MSVC)
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          
+      - name: Setup MSVC
+        run: |
+          echo "Using MSVC from Visual Studio 2022"
+          
+      - name: Configure CMake
+        run: |
+          cmake -B build -G "Visual Studio 17 2022" -A x64 -DPEELMESH_BUILD_PYTHON=ON -DPEELMESH_BUILD_TESTS=ON
+          
+      - name: Build
+        run: |
+          cmake --build build --config Release --target peelmesh
+          
+      - name: Run Tests
+        run: |
+          cd build
+          ctest -C Release --output-on-failure
+          
+      - name: Save Status
+        shell: bash
+        run: |
+          BUILD_STATUS=$([ $? -eq 0 ] && echo "success" || echo "failed")
+          COLOR=$([ "$BUILD_STATUS" = "success" ] && echo "brightgreen" || echo "red")
+          
+          # 简化的JSON数据
+          echo "{\"schemaVersion\": 1, \"label\": \"VS2022\", \"message\": \"$BUILD_STATUS\", \"color\": \"$COLOR\"}" > msvc.json
+          
+        id: status
+
+      - name: Upload Status
+        uses: actions/upload-artifact@v3
+        with:
+          name: msvc-status
+          path: msvc.json
+
+  windows_clang:
+    runs-on: windows-latest
+    name: Clang (VS2022)
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          
+      - name: Install LLVM/Clang
+        run: |
+          choco install llvm --version=16.0.6 -y
+          
+      - name: Configure CMake
+        run: |
+          cmake -B build -G "Visual Studio 17 2022" -A x64 -T "ClangCL" -DPEELMESH_BUILD_PYTHON=ON -DPEELMESH_BUILD_TESTS=ON
+          
+      - name: Build
+        run: |
+          cmake --build build --config Release --target peelmesh
+          
+      - name: Run Tests
+        run: |
+          cd build
+          ctest -C Release --output-on-failure
+          
+      - name: Save Status
+        shell: bash
+        run: |
+          BUILD_STATUS=$([ $? -eq 0 ] && echo "success" || echo "failed")
+          COLOR=$([ "$BUILD_STATUS" = "success" ] && echo "brightgreen" || echo "red")
+          
+          echo "{\"schemaVersion\": 1, \"label\": \"ClangCL\", \"message\": \"$BUILD_STATUS\", \"color\": \"$COLOR\"}" > clang.json
+          
+        id: status
+
+      - name: Upload Status
+        uses: actions/upload-artifact@v3
+        with:
+          name: clang-status
+          path: clang.json
+
+  linux_gcc:
+    runs-on: ubuntu-latest
+    name: Linux (g++13)
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          
+      - name: Setup GCC-13
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y g++-13
+          
+      - name: Configure CMake
+        run: |
+          cmake -B build -DCMAKE_CXX_COMPILER=g++-13 -DPEELMESH_BUILD_PYTHON=ON -DPEELMESH_BUILD_TESTS=ON
+          
+      - name: Build
+        run: |
+          cmake --build build --config Release --target peelmesh
+          
+      - name: Run Tests
+        run: |
+          cd build
+          ctest -C Release --output-on-failure
+          
+      - name: Save Status
+        shell: bash
+        run: |
+          BUILD_STATUS=$([ $? -eq 0 ] && echo "success" || echo "failed")
+          COLOR=$([ "$BUILD_STATUS" = "success" ] && echo "brightgreen" || echo "red")
+          
+          echo "{\"schemaVersion\": 1, \"label\": \"g++13\", \"message\": \"$BUILD_STATUS\", \"color\": \"$COLOR\"}" > gcc.json
+          
+        id: status
+
+      - name: Upload Status
+        uses: actions/upload-artifact@v3
+        with:
+          name: gcc-status
+          path: gcc.json
+
+  generate_badge:
+    runs-on: ubuntu-latest
+    needs: [windows_msvc, windows_clang, linux_gcc]
+    outputs:
+      msvc_badge: ${{ steps.set_vars.outputs.msvc_badge }}
+      clang_badge: ${{ steps.set_vars.outputs.clang_badge }}
+      gcc_badge: ${{ steps.set_vars.outputs.gcc_badge }}
+      
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        
+      - name: Create Badge URLs
+        id: set_vars
+        run: |
+          # 读取构建结果
+          MSVC_BADGE=$(cat msvc-status/msvc.json | base64 -w0)
+          CLANG_BADGE=$(cat clang-status/clang.json | base64 -w0)
+          GCC_BADGE=$(cat gcc-status/gcc.json | base64 -w0)
+          
+          # 创建 shields.io 端点 URL
+          echo "msvc_badge=https://img.shields.io/endpoint?url=data:application/json;base64,${MSVC_BADGE}" >> $GITHUB_OUTPUT
+          echo "clang_badge=https://img.shields.io/endpoint?url=data:application/json;base64,${CLANG_BADGE}" >> $GITHUB_OUTPUT
+          echo "gcc_badge=https://img.shields.io/endpoint?url=data:application/json;base64,${GCC_BADGE}" >> $GITHUB_OUTPUT
+        
+  update_readme:
+    runs-on: ubuntu-latest
+    needs: generate_badge
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Update README
+        run: |
+          # 创建带有构建状态的 README 内容
+          MSVC_URL="${{ needs.generate_badge.outputs.msvc_badge }}"
+          CLANG_URL="${{ needs.generate_badge.outputs.clang_badge }}"
+          GCC_URL="${{ needs.generate_badge.outputs.gcc_badge }}"
+          
+          # 构造 README 内容
+          echo "# PeelMesh Project" > README.md
+          echo "" >> README.md
+          echo "## Build Status" >> README.md
+          echo "" >> README.md
+          echo "| Compiler       | Status |" >> README.md
+          echo "|----------------|--------|" >> README.md
+          echo "| MSVC (VS2022)  | ![VS2022 Build]($MSVC_URL) |" >> README.md
+          echo "| Clang (VS2022) | ![Clang Build]($CLANG_URL) |" >> README.md
+          echo "| g++13 (Linux)  | ![GCC Build]($GCC_URL) |" >> README.md
+          echo "" >> README.md
+          echo "## Project Description" >> README.md
+          echo "Your project description here..." >> README.md
+          
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+      - name: Commit README changes
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add README.md
+          git commit -m "Update build status badges"
+          git push
