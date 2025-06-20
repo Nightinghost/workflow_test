@@ -104,16 +104,18 @@ jobs:
         if: success()
         uses: RubbaBoy/BYOB@v1.3.0
         with:
-          name: ubuntu-gcc
-          status: success
-          color: green
+          NAME: ubuntu-gcc-status
+          LABEL: ubuntu-gcc
+          STATUS: success
+          COLOR: green
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set Badge Failure
         if: failure()
         uses: RubbaBoy/BYOB@v1.3.0
         with:
-          name: ubuntu-gcc
-          status: failure
-          color: red
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+            NAME: ubuntu-gcc-status
+            LABEL: ubuntu-gcc
+            STATUS: failure
+            COLOR: red
+            github_token: ${{ secrets.GITHUB_TOKEN }}
