@@ -114,3 +114,15 @@ jobs:
         run: |
           cd build
           ctest -C Release --output-on-failure
+
+      - name: Save Build Status
+        shell: bash
+        run: |
+          if [ $? -eq 0 ]; then
+            echo "status=success" >> $GITHUB_OUTPUT
+            echo "color=green" >> $GITHUB_OUTPUT
+          else
+            echo "status=failed" >> $GITHUB_OUTPUT
+            echo "color=red" >> $GITHUB_OUTPUT
+          fi
+        id: build_result

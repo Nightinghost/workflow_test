@@ -1,0 +1,119 @@
+name: Cross-Platform CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-windows-msvc:
+    name: Windows (MSVC)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure with CMake
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Run Tests
+        run: ctest --test-dir build -C Release
+
+      - name: Set Badge Success
+        if: success()
+        uses: RubbaBoy/BYOB@v1.3.0
+        with:
+          name: windows-msvc
+          status: success
+          color: green
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set Badge Failure
+        if: failure()
+        uses: RubbaBoy/BYOB@v1.3.0
+        with:
+          name: windows-msvc
+          status: failure
+          color: red
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  build-windows-clang:
+    name: Windows (Clang)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set clang-cl as compiler
+        run: |
+          echo "CC=clang-cl" >> $env:GITHUB_ENV
+          echo "CXX=clang-cl" >> $env:GITHUB_ENV
+
+      - name: Configure with CMake
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Run Tests
+        run: ctest --test-dir build -C Release
+
+      - name: Set Badge Success
+        if: success()
+        uses: RubbaBoy/BYOB@v1.3.0
+        with:
+          name: windows-clang
+          status: success
+          color: green
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set Badge Failure
+        if: failure()
+        uses: RubbaBoy/BYOB@v1.3.0
+        with:
+          name: windows-clang
+          status: failure
+          color: red
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  build-ubuntu-gcc:
+    name: Ubuntu (g++13)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install GCC 13 and CMake
+        run: |
+          sudo apt update
+          sudo apt install -y g++-13 cmake
+          echo "CC=gcc-13" >> $GITHUB_ENV
+          echo "CXX=g++-13" >> $GITHUB_ENV
+
+      - name: Configure with CMake
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Run Tests
+        run: ctest --test-dir build -C Release
+
+      - name: Set Badge Success
+        if: success()
+        uses: RubbaBoy/BYOB@v1.3.0
+        with:
+          name: ubuntu-gcc
+          status: success
+          color: green
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set Badge Failure
+        if: failure()
+        uses: RubbaBoy/BYOB@v1.3.0
+        with:
+          name: ubuntu-gcc
+          status: failure
+          color: red
+          github_token: ${{ secrets.GITHUB_TOKEN }}
