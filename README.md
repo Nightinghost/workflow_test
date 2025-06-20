@@ -26,8 +26,7 @@ Your project description here...
 
 
 
-| Platform | Compiler | Status |
-|----------|----------|--------|
-| Windows  | MSVC     | ![MSVC](https://byob.yarr.is/Nightinghost/workflow_test/windows-msvc) |
-| Windows  | Clang    | ![Clang](https://byob.yarr.is/Nightinghost/workflow_test/windows-clang) |
-| Ubuntu   | g++13    | ![GCC](https://byob.yarr.is/Nightinghost/workflow_test/ubuntu-gcc) |
+
+![MSVC](https://byob.yarr.is/Nightinghost/workflow_test/windows-msvc) 
+![Clang](https://byob.yarr.is/Nightinghost/workflow_test/windows-clang) 
+![GCC](https://byob.yarr.is/Nightinghost/workflow_test/ubuntu-gcc) 
