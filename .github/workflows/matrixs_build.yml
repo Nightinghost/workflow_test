@@ -95,12 +95,24 @@ jobs:
           run: |
             echo "result=$(cat result.txt)" >> $GITHUB_OUTPUT
         
-        - name: Set Badge
+        - name: Set Badge (Success)
+          if: steps.read_result.outputs.result == 'success'
+          uses: RubbaBoy/BYOB@v1.3.0
+          with:
+              name: ${{ matrix.badge }}
+              label: ${{ matrix.badge }}
+              icon: github
+              status: success
+              color: green
+              github_token: ${{ secrets.GITHUB_TOKEN }}
+          
+        - name: Set Badge (Failure)
+          if: steps.read_result.outputs.result != 'success'
           uses: RubbaBoy/BYOB@v1.3.0
           with:
             name: ${{ matrix.badge }}
             label: ${{ matrix.badge }}
             icon: github
-            status: ${{ steps.read_result.outputs.result }}
-            color: ${{ steps.read_result.outputs.result == 'success' && 'green' || 'red' }}
+            status: failure
+            color: red
             github_token: ${{ secrets.GITHUB_TOKEN }}
