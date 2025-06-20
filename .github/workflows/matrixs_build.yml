@@ -142,6 +142,8 @@ jobs:
           uses: RubbaBoy/BYOB@v1.3.0
           with:
             name: ${{ matrix.badge }}
+            label: ${{ matrix.badge }}
+            icon: github
             status: ${{ steps.read_result.outputs.result }}
             color: ${{ steps.read_result.outputs.result == 'success' && 'green' || 'red' }}
             github_token: ${{ secrets.GITHUB_TOKEN }}
