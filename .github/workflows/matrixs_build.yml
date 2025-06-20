@@ -52,12 +52,12 @@ jobs:
 
       - name: Save build result
         run: |
-            echo "success" > result.txt
+            echo "success" > ${{ matrix.badge }}-result.txt
         if: success()
 
       - name: Save failure result
         run: |
-            echo "failure" > result.txt
+            echo "failure" > ${{ matrix.badge }}-result.txt
         if: failure()
     
       - name: Upload result
@@ -87,13 +87,13 @@ jobs:
             path: .
         
         - name: Debug badge result
-          run: cat result.txt
+          run: cat ${{ matrix.badge }}-result.txt
           
 
         - name: Read badge result
           id: read_result
           run: |
-            echo "result=$(cat result.txt)" >> $GITHUB_OUTPUT
+            echo "result=$(cat ${{ matrix.badge }}-result.txt)" > $GITHUB_OUTPUT
         
         - name: Set Badge (Success)
           if: steps.read_result.outputs.result == 'success'
