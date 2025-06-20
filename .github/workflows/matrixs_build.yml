@@ -85,6 +85,10 @@ jobs:
           with:
             name: ${{ matrix.badge }}-result
             path: .
+        
+        - name: Debug badge result
+          run: cat result.txt
+          
 
         - name: Read badge result
           id: read_result
