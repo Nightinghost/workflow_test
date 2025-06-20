@@ -25,7 +25,7 @@ jobs:
           name: windows-msvc
           status: success
           color: green
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.github_token }}
 
       - name: Set Badge Failure
         if: failure()
@@ -34,7 +34,7 @@ jobs:
           name: windows-msvc
           status: failure
           color: red
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.github_token }}
 
   build-windows-clang:
     name: Windows (Clang)
@@ -63,7 +63,7 @@ jobs:
           name: windows-clang
           status: success
           color: green
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.github_token }}
 
       - name: Set Badge Failure
         if: failure()
@@ -72,7 +72,7 @@ jobs:
           name: windows-clang
           status: failure
           color: red
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.github_token }}
 
   build-ubuntu-gcc:
     name: Ubuntu (g++13)
@@ -100,18 +100,20 @@ jobs:
         if: success()
         uses: RubbaBoy/BYOB@v1.3.0
         with:
-          NAME: ubuntu-gcc-status
-          LABEL: ubuntu-gcc
-          STATUS: success
-          COLOR: green
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: ubuntu-gcc-status
+          icon: github
+          label: ubuntu-gcc
+          status: success
+          color: green
+          github_token: ${{ secrets.github_token }}
 
       - name: Set Badge Failure
         if: failure()
         uses: RubbaBoy/BYOB@v1.3.0
         with:
-            NAME: ubuntu-gcc-status
-            LABEL: ubuntu-gcc
-            STATUS: failure
-            COLOR: red
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            name: ubuntu-gcc-status
+            icon: github
+            label: ubuntu-gcc
+            status: failure
+            color: red
+            github_token: ${{ secrets.github_token }}

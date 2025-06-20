@@ -20,5 +20,7 @@ Your project description here...
 | Ubuntu   | g++13    | ![GCC](https://github.com/Nightinghost/workflow_test/ubuntu-gcc-status) |
 
 
-![](https://byob.yarr.is/Nightinghost/workflow_test/time)
+![AAA](https://byob.yarr.is/Nightinghost/workflow_test/time)
+
+![BBB](https://github.com/Nightinghost/workflow_test/time)
 
