@@ -66,6 +66,10 @@ jobs:
           name: ${{ matrix.badge }}-result
           path: result.txt
     
+      - name: Debug Badge Result
+        run: cat result.txt
+        
+    
   badge:
     name: Write Badge
     runs-on: ubuntu-latest
