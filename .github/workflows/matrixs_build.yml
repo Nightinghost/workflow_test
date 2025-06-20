@@ -1,0 +1,165 @@
+# name: multi-platform build
+
+# on: [push, pull_request]
+
+# jobs:
+#     build:
+#         name: Build on ${{ matrix.os }} (${{ matrix.compiler }})
+#         runs-on: ${{ matrix.os }}
+#         strategy:
+#             matrix:
+#                 os: [ubuntu-latest, windows-latest, macOS-latest]
+#                 compiler: [msvc, gcc, clang]
+
+#                 exclude:
+#                     - os: ubuntu-latest
+#                       compiler: msvc
+#                     - os: windows-latest
+#                       compiler: gcc
+    
+#         steps:
+#             - uses: actions/checkout@v4
+
+#             - name: Configure Compiler (Windows Clang)
+#               if: matrix.compiler == 'clang' && runner.os == 'Windows'
+#               run: |
+#                 echo "CC=clang-cl" >> $GITHUB_ENV
+#                 echo "CXX=clang-cl" >> $GITHUB_ENV
+
+#             - name: Configure Compiler (Windows MSVC)
+#               if: matrix.compiler == 'msvc' && runner.os == 'Windows'
+#               run: |
+#                 echo "CC=cl" >> $GITHUB_ENV
+#                 echo "CXX=cl" >> $GITHUB_ENV
+            
+#             - name: Configure Compiler (Linux GCC)
+#               if: matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc'
+#               run: |
+#                 echo "CC=gcc-13" >> $GITHUB_ENV
+#                 echo "CXX=g++-13" >> $GITHUB_ENV
+
+#             - name: Configure Compiler (Linux Clang)
+#               if: matrix.os == 'ubuntu-latest' && matrix.compiler == 'clang'
+#               run: |
+#                 echo "CC=clang-13" >> $GITHUB_ENV
+#                 echo "CXX=clang++-13" >> $GITHUB_ENV
+            
+#             - name: Configure and Build
+#               run: |
+#                 cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
+#                 cmake --build build --config Release
+
+name: CMake Matrix Build with Badges
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }} (${{ matrix.compiler }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            compiler: msvc
+            cc: cl
+            cxx: cl
+            badge: windows-msvc
+
+          - os: windows-latest
+            compiler: clang
+            cc: clang-cl
+            cxx: clang-cl
+            badge: windows-clang
+
+          - os: ubuntu-latest
+            compiler: gcc-13
+            cc: gcc-13
+            cxx: g++-13
+            badge: ubuntu-gcc
+
+    env:
+      CC: ${{ matrix.cc }}
+      CXX: ${{ matrix.cxx }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install GCC 13 (if Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt update
+          sudo apt install -y g++-13 cmake
+
+      - name: Build & Test
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release
+          ctest --test-dir build -C Release || echo "::set-output name=build_status::failure"
+
+      - name: Save build result
+        run: |
+            echo "success" > result.txt
+        if: success()
+
+      - name: Save failure result
+        run: |
+            echo "failure" > result.txt
+        if: failure()
+    
+      - name: Upload result
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.badge }}-result
+          path: result.txt
+    
+  badge:
+    name: Write Badge
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+        matrix:
+          include:
+            - badge: windows-msvc
+            - badge: windows-clang
+            - badge: ubuntu-gcc
+    steps:
+        - uses: actions/download-artifact@v4
+          with:
+            name: ${{ matrix.badge }}-result
+            path: .
+
+        - name: Read badge result
+          id: read_result
+          run: |
+            echo "result=$(cat result.txt)" >> $GITHUB_OUTPUT
+        
+        - name: Set Badge
+          uses: RubbaBoy/BYOB@v1.3.0
+          with:
+            name: ${{ matrix.badge }}
+            status: ${{ steps.read_result.outputs.result }}
+            color: ${{ steps.read_result.outputs.result == 'success' && 'green' || 'red' }}
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+
+          #   - name: Set Badge (Success)
+    #     if: success()
+    #     uses: RubbaBoy/BYOB@v1.3.0
+    #     with:
+    #       name: ${{ matrix.badge }}
+    #       status: success
+    #       color: green
+    #       github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    #   - name: Set Badge (Failure)
+    #     if: failure()
+    #     uses: RubbaBoy/BYOB@v1.3.0
+    #     with:
+    #       name: ${{ matrix.badge }}
+    #       status: failure
+    #       color: red
+    #       github_token: ${{ secrets.GITHUB_TOKEN }}

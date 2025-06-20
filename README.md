@@ -15,12 +15,19 @@ Your project description here...
 
 | Platform | Compiler | Status |
 |----------|----------|--------|
-| Windows  | MSVC     | ![MSVC](https://github.com/Nightinghost/workflow_test/ubuntu-gcc-status) |
-| Windows  | Clang    | ![Clang](https://github.com/Nightinghost/workflow_test/ubuntu-gcc-status) |
-| Ubuntu   | g++13    | ![GCC](https://github.com/Nightinghost/workflow_test/ubuntu-gcc-status) |
+| Windows  | MSVC     | ![MSVC](https://byob.yarr.is/Nightinghost/workflow_test/ubuntu-gcc-status) |
+| Windows  | Clang    | ![Clang](https://byob.yarr.is/Nightinghost/workflow_test/ubuntu-gcc-status) |
+| Ubuntu   | g++13    | ![GCC](https://byob.yarr.is/Nightinghost/workflow_test/ubuntu-gcc-status) |
 
 
 ![AAA](https://byob.yarr.is/Nightinghost/workflow_test/time)
 
 ![BBB](https://github.com/Nightinghost/workflow_test/time)
 
+
+
+| Platform | Compiler | Status |
+|----------|----------|--------|
+| Windows  | MSVC     | ![MSVC](https://byob.yarr.is/Nightinghost/workflow_test/windows-msvc) |
+| Windows  | Clang    | ![Clang](https://byob.yarr.is/Nightinghost/workflow_test/windows-clang) |
+| Ubuntu   | g++13    | ![GCC](https://byob.yarr.is/Nightinghost/workflow_test/ubuntu-gcc) |
