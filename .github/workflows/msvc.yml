@@ -33,5 +33,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: main_msvc
-          path: build/main.exe
+          path: build/Release/main.exe
           if-no-files-found: error
