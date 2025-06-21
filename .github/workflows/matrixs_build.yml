@@ -48,7 +48,7 @@ jobs:
       - name: Build & Test
         run: |
           cmake -S . -B build
-          cmake --build build --config Release --target all
+          cmake --build build --config Release
       
       - name: Install to staging directory
         run: |
