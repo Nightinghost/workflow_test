@@ -7,7 +7,7 @@ on:
 
 jobs:
   call-build:
-    uses: ./.github/workflows/build.yml
+    uses: ./.github/workflows/matrixs_build.yml
     secrets: inherit  # 继承 secrets（如 GITHUB_TOKEN）
 
   release:
