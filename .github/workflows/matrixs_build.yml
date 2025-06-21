@@ -68,16 +68,17 @@ jobs:
           path: output/*
 
       - name: Save build result
-        if: success()
+        if: success() && always()
         run: |
             echo "success" > ${{ matrix.badge }}-result.txt
         
       - name: Save failure result
-        if: failure()
+        if: failure() && always()
         run: |
             echo "failure" > ${{ matrix.badge }}-result.txt
     
       - name: Upload result
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.badge }}-result
@@ -89,6 +90,7 @@ jobs:
     
   badge:
     name: Write Badge
+    if: always()
     runs-on: ubuntu-latest
     needs: build
     strategy:
