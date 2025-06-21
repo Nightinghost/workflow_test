@@ -94,7 +94,7 @@ jobs:
           id: read_result
           run: |
             cat ${{ matrix.badge }}-result.txt
-            echo "result=$(cat ${{ matrix.badge }}-result.txt)" > $GITHUB_OUTPUT
+            echo "$(cat ${{ matrix.badge }}-result.txt)" > $GITHUB_OUTPUT
             cat $GITHUB_OUTPUT
         
         - name: Set Badge (Success)
