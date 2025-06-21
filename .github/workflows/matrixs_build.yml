@@ -93,9 +93,9 @@ jobs:
         - name: Read badge result
           id: read_result
           run: |
-            cat ${{ matrix.badge }}-result.txt
-            echo "result=$(cat ${{ matrix.badge }}-result.txt)" >> $GITHUB_OUTPUT
-            cat $GITHUB_OUTPUT
+            result=$(<${{ matrix.badge }}-result.txt)
+            result=$(echo "$result" | tr -d '\r\n ')
+            echo "result=$result" >> $GITHUB_OUTPUT
         
         - name: Set Badge (Success)
           if: steps.read_result.outputs.result == 'success'
