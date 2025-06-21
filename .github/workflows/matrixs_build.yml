@@ -51,14 +51,14 @@ jobs:
         #   ctest --test-dir build -C Release
 
       - name: Save build result
+        if: success()
         run: |
             echo "success" > ${{ matrix.badge }}-result.txt
-        if: success()
-
+        
       - name: Save failure result
+        if: failure()
         run: |
             echo "failure" > ${{ matrix.badge }}-result.txt
-        if: failure()
     
       - name: Upload result
         uses: actions/upload-artifact@v4
