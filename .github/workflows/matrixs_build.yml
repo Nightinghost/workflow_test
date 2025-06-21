@@ -19,18 +19,21 @@ jobs:
             cc: cl
             cxx: cl
             badge: windows-msvc
+            exe: .exe
 
           - os: windows-latest
             compiler: clang
             cc: clang-cl
             cxx: clang-cl
             badge: windows-clang
+            exe: .exe
 
           - os: ubuntu-latest
             compiler: gcc-13
             cc: gcc-13
             cxx: g++-13
             badge: ubuntu-gcc
+            exe: ""
 
     env:
       CC: ${{ matrix.cc }}
@@ -58,8 +61,7 @@ jobs:
       - name: Rename Executable
         run: |
           mkdir -p output
-          EXE_SUFFIX="${{ runner.os == 'Windows' && '.exe' || '' }}"
-          cp install/bin/main${EXE_SUFFIX} "output/${{ matrix.badge }}-x64-main${EXE_SUFFIX}"
+          cp install/bin/main${{ matrix.exe }} "output/${{ matrix.badge }}-x64-main${{ matrix.exe }}"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -73,7 +75,7 @@ jobs:
             echo "success" > ${{ matrix.badge }}-result.txt
         
       - name: Save failure result
-        if: failure() && always()
+        if: failure() && always() && cancelled()
         run: |
             echo "failure" > ${{ matrix.badge }}-result.txt
     
