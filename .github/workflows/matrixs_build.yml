@@ -5,6 +5,7 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
+  workflow_call:
 
 jobs:
   build:
@@ -49,6 +50,18 @@ jobs:
           cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
           cmake --build build --config Release
         #   ctest --test-dir build -C Release
+      
+      - name: Rename Executable
+        run: |
+          mkdir -p output
+          EXE_SUFFIX="${{ runner.os == 'Windows' && '.exe' || '' }}"
+          cp build/main "output/${{ matrix.badge }}-x64-main${EXE_SUFFIX}"
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.badge }}-binary
+          path: output/*
 
       - name: Save build result
         if: success()
