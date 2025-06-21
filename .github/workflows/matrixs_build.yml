@@ -83,7 +83,7 @@ jobs:
     steps:
         - uses: actions/download-artifact@v4
           with:
-            name: ${{ matrix.badge }}-result.txt
+            name: ${{ matrix.badge }}-result
             path: .
         
         - name: Debug badge result
@@ -95,6 +95,7 @@ jobs:
           run: |
             cat ${{ matrix.badge }}-result.txt
             echo "result=$(cat ${{ matrix.badge }}-result.txt)" > $GITHUB_OUTPUT
+            cat $GITHUB_OUTPUT
         
         - name: Set Badge (Success)
           if: steps.read_result.outputs.result == 'success'
@@ -106,7 +107,7 @@ jobs:
               status: success
               color: green
               github_token: ${{ secrets.GITHUB_TOKEN }}
-          
+        
         - name: Set Badge (Failure)
           if: steps.read_result.outputs.result != 'success'
           uses: RubbaBoy/BYOB@v1.3.0
