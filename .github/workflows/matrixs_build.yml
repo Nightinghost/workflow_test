@@ -59,7 +59,7 @@ jobs:
         run: |
           mkdir -p output
           EXE_SUFFIX="${{ runner.os == 'Windows' && '.exe' || '' }}"
-          cp build/install/bin/main${EXE_SUFFIX} "output/${{ matrix.badge }}-x64-main${EXE_SUFFIX}"
+          cp install/bin/main${EXE_SUFFIX} "output/${{ matrix.badge }}-x64-main${EXE_SUFFIX}"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
