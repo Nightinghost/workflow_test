@@ -92,7 +92,6 @@ jobs:
     
   badge:
     name: Write Badge
-    if: always()
     runs-on: ubuntu-latest
     needs: build
     strategy:
@@ -103,15 +102,18 @@ jobs:
             - badge: ubuntu-gcc
     steps:
         - uses: actions/download-artifact@v4
+          if: always()
           with:
             name: ${{ matrix.badge }}-result
             path: .
         
         - name: Debug badge result
+          if: always()
           run: cat ${{ matrix.badge }}-result.txt
           
 
         - name: Read badge result
+          if: always()
           id: read_result
           run: |
             result=$(<${{ matrix.badge }}-result.txt)
@@ -119,7 +121,7 @@ jobs:
             echo "result=$result" >> $GITHUB_OUTPUT
         
         - name: Set Badge (Success)
-          if: steps.read_result.outputs.result == 'success'
+          if: steps.read_result.outputs.result == 'success' && always()
           uses: RubbaBoy/BYOB@v1.3.0
           with:
               name: ${{ matrix.badge }}
@@ -130,7 +132,7 @@ jobs:
               github_token: ${{ secrets.GITHUB_TOKEN }}
         
         - name: Set Badge (Failure)
-          if: steps.read_result.outputs.result != 'success'
+          if: steps.read_result.outputs.result != 'success' && always()
           uses: RubbaBoy/BYOB@v1.3.0
           with:
             name: ${{ matrix.badge }}
