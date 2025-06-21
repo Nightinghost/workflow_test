@@ -38,11 +38,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install GCC 13 (if Linux)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt update
-          sudo apt install -y g++-13 cmake
+    #   - name: Install GCC 13 (if Linux)
+    #     if: runner.os == 'Linux'
+    #     run: |
+    #       sudo apt update
+    #       sudo apt install -y g++-13 cmake
 
       - name: Build & Test
         run: |
