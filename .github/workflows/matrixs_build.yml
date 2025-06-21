@@ -83,7 +83,7 @@ jobs:
     steps:
         - uses: actions/download-artifact@v4
           with:
-            name: ${{ matrix.badge }}-result
+            name: ${{ matrix.badge }}-result.txt
             path: .
         
         - name: Debug badge result
@@ -93,6 +93,7 @@ jobs:
         - name: Read badge result
           id: read_result
           run: |
+            cat ${{ matrix.badge }}-result.txt
             echo "result=$(cat ${{ matrix.badge }}-result.txt)" > $GITHUB_OUTPUT
         
         - name: Set Badge (Success)
